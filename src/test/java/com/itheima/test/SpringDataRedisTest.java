@@ -23,6 +23,21 @@ public class SpringDataRedisTest {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    /**
+     * 测试StringRedisTemplate
+     */
+    @Test
+    public void myTest() {
+        stringRedisTemplate.opsForValue().set("test", "我的测试Func");
+        String value = stringRedisTemplate.opsForValue().get("test");
+        System.out.println(value);
+
+
+    }
+
     /**
      * 操作String类型数据
      */
