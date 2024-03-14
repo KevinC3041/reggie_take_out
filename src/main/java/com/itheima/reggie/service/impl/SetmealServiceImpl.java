@@ -167,6 +167,7 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
      * @param setmealDto
      */
     @Override
+    @Transactional
     public void updateWithSetmealDish(SetmealDto setmealDto) {
 
         //更新setmeal表基本信息

@@ -206,6 +206,11 @@ public class SetmealController {
         log.info("需要修改状态的id号为: {}", ids);
         try {
             setmealService.discontinue(ids);
+
+            //清理所有套餐的缓存数据
+            Set keys = redisTemplate.keys("setmeal_*");
+            redisTemplate.delete(keys);
+
         } catch(Exception e) {
             return R.error("Something went wrong here, please try again later");
         }
@@ -223,6 +228,11 @@ public class SetmealController {
         log.info("需要修改状态的id号为: {}", ids);
         try {
             setmealService.startMenu(ids);
+
+            //清理所有套餐的缓存数据
+            Set keys = redisTemplate.keys("setmeal_*");
+            redisTemplate.delete(keys);
+
         } catch(Exception e) {
             return R.error("Something went wrong here, please try again later");
         }

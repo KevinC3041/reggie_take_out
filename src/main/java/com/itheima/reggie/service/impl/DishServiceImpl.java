@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.reggie.dto.DishDto;
 import com.itheima.reggie.entity.Dish;
 import com.itheima.reggie.entity.DishFlavor;
+import com.itheima.reggie.entity.Setmeal;
 import com.itheima.reggie.mapper.DishMapper;
 import com.itheima.reggie.service.DishFlavorService;
 import com.itheima.reggie.service.DishService;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -107,16 +110,53 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     }
 
     @Override
-    public void updateStatus0(Long id) {
-        Dish dish = this.getById(id);
-        dish.setStatus(0);
-        super.updateById(dish);
+    public void updateStatus0(String ids) {
+//        //wrong code, cannot do in batch
+//        Dish dish = this.getById(ids);
+//        dish.setStatus(0);
+//        super.updateById(dish);
+
+        String[] idList = ids.split(",");
+        if (idList.length == 1) {
+            Long id = Long.parseLong(ids);
+            Dish dish = new Dish();
+            dish.setId(id);
+            dish.setStatus(0);
+            super.updateById(dish);
+        } else if (idList.length > 1) {
+            List<Dish> dishList = new ArrayList<>();
+            for (String idS : idList) {
+                Long id = Long.parseLong(idS);
+                Dish temp = new Dish();
+                temp.setStatus(0);
+                temp.setId(id);
+                dishList.add(temp);
+            }
+            super.updateBatchById(dishList);
+        }
+
+
     }
 
     @Override
-    public void updateStatus1(Long id) {
-        Dish dish = this.getById(id);
-        dish.setStatus(1);
-        super.updateById(dish);
+    public void updateStatus1(String ids) {
+//        //wrong code, cannot do in batch
+//        Dish dish = this.getById(ids);
+//        dish.setStatus(1);
+//        super.updateById(dish);
+
+        List<String> idList = Arrays.asList(ids.split(","));
+        if (idList.size() == 1) {
+            Long id = Long.parseLong(ids);
+            Dish dish = this.getById(id);
+            dish.setStatus(1);
+            this.updateById(dish);
+        } else if (idList.size() > 1) {
+            List<Dish> dishList = listByIds(idList);
+            dishList.forEach((dish) -> {
+                dish.setStatus(1);
+            });
+            this.updateBatchById(dishList);
+        }
     }
 }

@@ -7,6 +7,7 @@ import com.itheima.reggie.dto.DishDto;
 import com.itheima.reggie.entity.Category;
 import com.itheima.reggie.entity.Dish;
 import com.itheima.reggie.entity.DishFlavor;
+import com.itheima.reggie.entity.Setmeal;
 import com.itheima.reggie.service.CategoryService;
 import com.itheima.reggie.service.DishFlavorService;
 import com.itheima.reggie.service.DishService;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -52,7 +54,7 @@ public class DishController {
 
         dishService.saveWithFlavor(dishDto);
 
-        //        //清理所有菜品的缓存数据
+//        //清理所有菜品的缓存数据
 //        Set keys = redisTemplate.keys("dish_*");
 //        redisTemplate.delete(keys);
 
@@ -169,9 +171,14 @@ public class DishController {
      * @return
      */
     @PostMapping("/status/0")
-    public R<String> discontinue(Long ids){
+    public R<String> discontinue(String ids){
         log.info("修改为停售的菜品id为：{}", ids);
         dishService.updateStatus0(ids);
+
+        //清理所有菜品的缓存数据
+        Set keys = redisTemplate.keys("dish_*");
+        redisTemplate.delete(keys);
+
         return R.success("菜品已停售");
     }
 
@@ -181,9 +188,14 @@ public class DishController {
      * @return
      */
     @PostMapping("/status/1")
-    public R<String> startMenu(Long ids){
+    public R<String> startMenu(String ids){
         log.info("修改为起售的菜品id为：{}", ids);
         dishService.updateStatus1(ids);
+
+        //清理所有菜品的缓存数据
+        Set keys = redisTemplate.keys("dish_*");
+        redisTemplate.delete(keys);
+
         return R.success("菜品已起售");
     }
 
