@@ -119,6 +119,20 @@ public class SetmealController {
         return R.success(setmealDto);
     }
 
+    /**
+     * 更新套餐信息，同时更新套餐菜品的信息
+     * @param setmealDto
+     * @return
+     */
+    @PutMapping
+    public R<String> update(@RequestBody SetmealDto setmealDto) {
+        log.info(setmealDto.toString());
+
+        setmealService.updateWithSetmealDish(setmealDto);
+
+        return R.success("套餐修改成功");
+    }
+
 
     /**
      * 删除套餐
