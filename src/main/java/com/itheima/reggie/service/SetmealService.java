@@ -32,4 +32,11 @@ public interface SetmealService extends IService<Setmeal> {
      * @param ids
      */
     void startMenu(String ids);
+
+    /**
+     * 根据id查询套餐信息和对应的菜品信息
+     * @param id
+     * @return
+     */
+    public SetmealDto getByIdWithDish(Long id);
 }

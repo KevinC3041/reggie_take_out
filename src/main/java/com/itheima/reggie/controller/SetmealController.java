@@ -106,6 +106,19 @@ public class SetmealController {
         return R.success(dtoPage);
     }
 
+    /**
+     * 根据id查询套餐信息和对应的菜品信息
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    public R<SetmealDto> get(@PathVariable Long id) {
+
+        SetmealDto setmealDto = setmealService.getByIdWithDish(id);
+
+        return R.success(setmealDto);
+    }
+
 
     /**
      * 删除套餐

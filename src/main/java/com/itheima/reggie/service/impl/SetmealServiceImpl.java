@@ -5,12 +5,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.reggie.common.CustomException;
 import com.itheima.reggie.common.R;
 import com.itheima.reggie.dto.SetmealDto;
+import com.itheima.reggie.entity.Category;
 import com.itheima.reggie.entity.Setmeal;
 import com.itheima.reggie.entity.SetmealDish;
 import com.itheima.reggie.mapper.SetmealMapper;
+import com.itheima.reggie.service.CategoryService;
 import com.itheima.reggie.service.SetmealDishService;
 import com.itheima.reggie.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +29,9 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
 
     @Autowired
     private SetmealDishService setmealDishService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     /**
      * 新增套餐，同时需要保存套餐和菜品的关联关系
@@ -80,7 +86,7 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
     }
 
     /**
-     *
+     * 停售套餐
      * @param ids
      */
     @Override
@@ -125,5 +131,34 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealMapper, Setmeal> impl
             this.updateBatchById(setmealList);
         }
 
+    }
+
+    /**
+     * 根据id查询套餐信息和对应的菜品信息
+     * @param id
+     * @return
+     */
+    @Override
+    public SetmealDto getByIdWithDish(Long id) {
+
+        //查询套餐基本信息，从setmeal表中查询
+        Setmeal setmeal = this.getById(id);
+
+        SetmealDto setmealDto = new SetmealDto();
+        BeanUtils.copyProperties(setmeal, setmealDto);
+
+        //查询当前套餐对应的分类名称，从category表中查询
+        LambdaQueryWrapper<Category> queryWrapperC = new LambdaQueryWrapper<>();
+        queryWrapperC.eq(Category::getId, setmealDto.getCategoryId());
+        Category category = categoryService.getOne(queryWrapperC);
+        setmealDto.setCategoryName(category.getName());
+
+        //查询当前套餐对应的菜品信息，从setmeal_dish表中查询
+        LambdaQueryWrapper<SetmealDish> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SetmealDish::getSetmealId, setmeal.getId());
+        List<SetmealDish> dishes = setmealDishService.list(queryWrapper);
+        setmealDto.setSetmealDishes(dishes);
+
+        return setmealDto;
     }
 }
