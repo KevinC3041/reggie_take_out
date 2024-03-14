@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,14 @@ public class SetmealController {
 
         setmealService.saveWithDish(setmealDto);
 
-//        return null;
+//        //清理所有套餐的缓存数据
+//        Set keys = redisTemplate.keys("setmeal_*");
+//        redisTemplate.delete(keys);
+
+        //清理某个分类下面的套餐缓存数据
+        String key = "setmeal_" + setmealDto.getCategoryId() + "_1";
+        redisTemplate.delete(key);
+
         return R.success("新增套餐成功");
     }
 
@@ -129,6 +137,14 @@ public class SetmealController {
         log.info(setmealDto.toString());
 
         setmealService.updateWithSetmealDish(setmealDto);
+
+//        //清理所有套餐的缓存数据
+//        Set keys = redisTemplate.keys("setmeal_*");
+//        redisTemplate.delete(keys);
+
+        //清理某个分类下面的套餐缓存数据
+        String key = "setmeal_" + setmealDto.getCategoryId() + "_1";
+        redisTemplate.delete(key);
 
         return R.success("套餐修改成功");
     }
