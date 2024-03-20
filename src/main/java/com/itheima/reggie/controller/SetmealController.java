@@ -136,6 +136,7 @@ public class SetmealController {
      * @return
      */
     @PutMapping
+    @CacheEvict(value = "setmealCache", key = "#setmealDto.categoryId + '_' + #setmealDto.status")
     public R<String> update(@RequestBody SetmealDto setmealDto) {
         log.info(setmealDto.toString());
 
@@ -145,9 +146,9 @@ public class SetmealController {
 //        Set keys = redisTemplate.keys("setmeal_*");
 //        redisTemplate.delete(keys);
 
-        //清理某个分类下面的套餐缓存数据
-        String key = "setmeal_" + setmealDto.getCategoryId() + "_1";
-        redisTemplate.delete(key);
+//        //清理某个分类下面的套餐缓存数据
+//        String key = "setmeal_" + setmealDto.getCategoryId() + "_1";
+//        redisTemplate.delete(key);
 
         return R.success("套餐修改成功");
     }
